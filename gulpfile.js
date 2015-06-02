@@ -9,6 +9,7 @@ var notify      = require('gulp-notify');
 var plumber     = require('gulp-plumber');
 var jshint      = require('gulp-jshint');
 var htmlhint    = require('gulp-htmlhint');
+var server      = require('gulp-server-livereload');
 
 
 var notifyError = function() {
@@ -23,27 +24,41 @@ var notifyError = function() {
 //================================================
 
 gulp.task('watch', function() {
-  gulp.watch('./templates/*.hbs', ['handlebars']);
-  gulp.watch('./sass/*.scss',     ['sass']);
+  gulp.watch('./app/templates/*.hbs', ['handlebars']);
+  gulp.watch('./app/sass/*.scss',     ['sass']);
   gulp.watch('./bower.json',      ['bower']);
-  gulp.watch('./index.html',      ['hint:html']);
-  gulp.watch('./js/*.js',         ['hint:js']);
+  gulp.watch('./app/index.html',      ['hint:html']);
+  gulp.watch('./app/js/*.js',         ['hint:js']);
 });
 
+//================================================
+// SERVER
+//================================================
+
+gulp.task('webserver', function() {
+  return gulp.src('app')
+    .pipe(server({
+      livereload: true,
+      open: true
+    }));
+});
+
+// Start the server and also the watch task
+gulp.task('serve', ['watch', 'webserver']);
 
 //================================================
 //  HINT
 //================================================
 
 gulp.task('hint:js', function() {
-  return gulp.src(['./js/*.js', '!./js/templates.js'])
+  return gulp.src(['./app/js/*.js', '!./app/js/templates.js', '!./app/js/vendor/*'])
     .pipe(notifyError())
     .pipe(jshint())
     .pipe(jshint.reporter('fail'));
 });
 
 gulp.task('hint:html', function() {
-  return gulp.src('index.html')
+  return gulp.src('app/index.html')
     .pipe(notifyError())
     .pipe(htmlhint())
     .pipe(htmlhint.failReporter());
@@ -58,7 +73,7 @@ gulp.task('hint:html', function() {
 // -- HANDLEBARS TEMPLATES -- //
 
 gulp.task('handlebars', function(){
-  return gulp.src('./templates/*.hbs')
+  return gulp.src('./app/templates/*.hbs')
     .pipe(notifyError())
     .pipe(handlebars())
     .pipe(wrap('Handlebars.template(<%= contents %>)'))
@@ -70,10 +85,10 @@ gulp.task('handlebars', function(){
 // -- SASS STYLESHEETS -- //
 
 gulp.task('sass', function() {
-  return gulp.src('./sass/*.scss')
+  return gulp.src('./app/sass/*.scss')
     .pipe(notifyError())
     .pipe(sass())
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('./app/css'));
 });
 
 
@@ -90,7 +105,7 @@ gulp.task('bower', ['bower:js',
 gulp.task('bower:js', function() {
   return gulp.src(bower({filter: '**/*.js'}))
     .pipe(notifyError())
-    .pipe(gulp.dest('vendor/js'));
+    .pipe(gulp.dest('app/js/vendor'));
 });
 
 
@@ -99,7 +114,7 @@ gulp.task('bower:js', function() {
 gulp.task('bower:css', function() {
   return gulp.src(bower({filter: '**/*.css'}))
     .pipe(notifyError())
-    .pipe(gulp.dest('vendor/css'));
+    .pipe(gulp.dest('app/css/vendor'));
 });
 
 
@@ -108,5 +123,5 @@ gulp.task('bower:css', function() {
 gulp.task('bower:fonts', function(){
   return gulp.src(bower({filter: /\.(eot|svg|ttf|woff|woff2|otf)$/g}))
     .pipe(notifyError())
-    .pipe(gulp.dest('vendor/fonts'));
+    .pipe(gulp.dest('app/fonts/'));
 });
