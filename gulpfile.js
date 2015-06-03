@@ -23,7 +23,10 @@ var notifyError = function() {
 //  WATCH
 //================================================
 
-gulp.task('watch', function() {
+// Start the server and also the watch task
+gulp.task('watch', ['watchlist', 'webserver']);
+
+gulp.task('watchlist', function() {
   gulp.watch('./app/templates/*.hbs', ['handlebars']);
   gulp.watch('./app/sass/*.scss',     ['sass']);
   gulp.watch('./bower.json',      ['bower']);
@@ -43,8 +46,6 @@ gulp.task('webserver', function() {
     }));
 });
 
-// Start the server and also the watch task
-gulp.task('serve', ['watch', 'webserver']);
 
 //================================================
 //  HINT
