@@ -123,5 +123,5 @@ gulp.task('bower:css', function() {
 gulp.task('bower:fonts', function(){
   return gulp.src(bower({filter: /\.(eot|svg|ttf|woff|woff2|otf)$/g}))
     .pipe(notifyError())
-    .pipe(gulp.dest('app/fonts/'));
+    .pipe(gulp.dest('app/css/fonts/'));
 });
