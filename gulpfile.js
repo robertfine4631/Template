@@ -55,6 +55,7 @@ gulp.task('hint:js', function() {
   return gulp.src(['./app/js/*.js', '!./app/js/templates.js', '!./app/js/vendor/*'])
     .pipe(notifyError())
     .pipe(jshint())
+    .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
 });
 
